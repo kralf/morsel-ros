@@ -16,32 +16,47 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_JOYSTICK_H
-#define ROS_JOYSTICK_H
+#ifndef ROS_TRANSFORM_BROADCASTER_H
+#define ROS_TRANSFORM_BROADCASTER_H
 
-/** @file ros_joystick.h
+/** @file ros_transform_broadcaster.h
     @author Ralf Kaestner ETHZ Autonomous Systems Lab
   */
 
-#include <sensor_msgs/Joy.h>
+#include <nodePath.h>
 
-#include "morsel-ros/node/ros_subscriber.h"
+#include "morsel-ros/node/ros_node.h"
 
-class ROSJoystick :
-  public ROSSubscriber {
+namespace tf {
+  class TransformBroadcaster;
+};
+
+class ROSTransformBroadcaster :
+  public NodePath {
 PUBLISHED:
+  /** Types and non-static subclasses
+    */
+  typedef tf::TransformBroadcaster Broadcaster;
+
   /** Constructors
     */
-  ROSJoystick(std::string name, ROSNode& node, PyObject* receiver,
-    std::string topic = "/joy", unsigned int queueSize = 1000);
+  ROSTransformBroadcaster(std::string name, ROSNode& node);
+  ROSTransformBroadcaster(const ROSTransformBroadcaster& src);
 
   /** Destructor
     */
-  virtual ~ROSJoystick();
+  virtual ~ROSTransformBroadcaster();
 protected:
+  ROSNode node;
+  Broadcaster* broadcaster;
+
 #ifndef CPPPARSER
-  void callback(const sensor_msgs::Joy::ConstPtr& message);
+  template <typename T> void publish(const T& transform);
 #endif
 };
+
+#ifndef CPPPARSER
+#include "morsel-ros/transform/ros_transform_broadcaster.tpp"
+#endif
 
 #endif

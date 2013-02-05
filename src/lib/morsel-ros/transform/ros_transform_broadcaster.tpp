@@ -16,32 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_JOYSTICK_H
-#define ROS_JOYSTICK_H
+#include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
 
-/** @file ros_joystick.h
-    @author Ralf Kaestner ETHZ Autonomous Systems Lab
-  */
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
-#include <sensor_msgs/Joy.h>
-
-#include "morsel-ros/node/ros_subscriber.h"
-
-class ROSJoystick :
-  public ROSSubscriber {
-PUBLISHED:
-  /** Constructors
-    */
-  ROSJoystick(std::string name, ROSNode& node, PyObject* receiver,
-    std::string topic = "/joy", unsigned int queueSize = 1000);
-
-  /** Destructor
-    */
-  virtual ~ROSJoystick();
-protected:
-#ifndef CPPPARSER
-  void callback(const sensor_msgs::Joy::ConstPtr& message);
-#endif
-};
-
-#endif
+template <typename T> void ROSTransformBroadcaster::publish(const T&
+    transform) {
+  broadcaster->sendTransform(transform);
+}

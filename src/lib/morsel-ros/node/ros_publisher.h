@@ -27,6 +27,10 @@
 
 #include "morsel-ros/node/ros_node.h"
 
+namespace ros {
+  class Publisher;
+};
+
 class ROSPublisher :
   public NodePath {
 PUBLISHED:
@@ -46,6 +50,14 @@ PUBLISHED:
 protected:
   ROSNode node;
   Publisher* publisher;
+
+#ifndef CPPPARSER
+  template <typename M> void publish(const M& message);
+#endif
 };
+
+#ifndef CPPPARSER
+#include "morsel-ros/node/ros_publisher.tpp"
+#endif
 
 #endif

@@ -27,6 +27,10 @@
 
 #include "morsel-ros/node/ros_node.h"
 
+namespace ros {
+  class Subscriber;
+};
+
 class ROSSubscriber :
   public NodePath {
 PUBLISHED:
@@ -37,7 +41,7 @@ PUBLISHED:
   /** Constructors
     */
   ROSSubscriber(std::string name, ROSNode& node, const Subscriber&
-    subscriber);
+    subscriber, PyObject* receiver);
   ROSSubscriber(const ROSSubscriber& src);
 
   /** Destructor
@@ -46,6 +50,11 @@ PUBLISHED:
 protected:
   ROSNode node;
   Subscriber* subscriber;
+
+  PyObject* receiver;
+
+  void received(const char* format, ...);
+  void received(PyObject* arguments);
 };
 
 #endif

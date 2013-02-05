@@ -16,32 +16,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_JOYSTICK_H
-#define ROS_JOYSTICK_H
+#ifndef ROS_CAMERA_INFO_H
+#define ROS_CAMERA_INFO_H
 
-/** @file ros_joystick.h
+/** @file ros_camera_info.h
     @author Ralf Kaestner ETHZ Autonomous Systems Lab
   */
 
-#include <sensor_msgs/Joy.h>
+#include <sensor_msgs/CameraInfo.h>
 
-#include "morsel-ros/node/ros_subscriber.h"
+#include <camera.h>
 
-class ROSJoystick :
-  public ROSSubscriber {
+#include "morsel-ros/node/ros_publisher.h"
+
+class ImageSensor;
+
+class ROSCameraInfo :
+  public ROSPublisher {
 PUBLISHED:
   /** Constructors
     */
-  ROSJoystick(std::string name, ROSNode& node, PyObject* receiver,
-    std::string topic = "/joy", unsigned int queueSize = 1000);
+  ROSCameraInfo(std::string name, ROSNode& node, std::string
+    topic = "/camera_info", unsigned int queueSize = 1000);
 
   /** Destructor
     */
-  virtual ~ROSJoystick();
+  virtual ~ROSCameraInfo();
+
+  void publish(double time, std::string frame, const Camera& camera);
 protected:
-#ifndef CPPPARSER
-  void callback(const sensor_msgs::Joy::ConstPtr& message);
-#endif
+  unsigned int sequence;
 };
 
 #endif

@@ -16,32 +16,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_JOYSTICK_H
-#define ROS_JOYSTICK_H
+#ifndef ROS_POINT_CLOUD_H
+#define ROS_POINT_CLOUD_H
 
-/** @file ros_joystick.h
+/** @file ros_point_cloud.h
     @author Ralf Kaestner ETHZ Autonomous Systems Lab
   */
 
-#include <sensor_msgs/Joy.h>
+#include <sensor_msgs/PointCloud2.h>
 
-#include "morsel-ros/node/ros_subscriber.h"
+#include "morsel-ros/node/ros_publisher.h"
 
-class ROSJoystick :
-  public ROSSubscriber {
+class RangeSensor;
+
+class ROSPointCloud :
+  public ROSPublisher {
 PUBLISHED:
   /** Constructors
     */
-  ROSJoystick(std::string name, ROSNode& node, PyObject* receiver,
-    std::string topic = "/joy", unsigned int queueSize = 1000);
+  ROSPointCloud(std::string name, ROSNode& node, std::string
+    topic = "/point_cloud", unsigned int queueSize = 1000,
+    bool publishColors = false, bool publishLabels = false, bool
+    publishInvalids = false);
 
   /** Destructor
     */
-  virtual ~ROSJoystick();
+  virtual ~ROSPointCloud();
+
+  void publish(double time, std::string frame, NodePath& sensor);
 protected:
-#ifndef CPPPARSER
-  void callback(const sensor_msgs::Joy::ConstPtr& message);
-#endif
+  unsigned int sequence;
+
+  bool publishColors;
+  bool publishLabels;
+  bool publishInvalids;
 };
 
 #endif

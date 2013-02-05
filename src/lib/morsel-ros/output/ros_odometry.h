@@ -16,28 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_POSE_H
-#define ROS_POSE_H
+#ifndef ROS_ODOMETRY_H
+#define ROS_ODOMETRY_H
 
-/** @file ros_pose.h
+/** @file ros_odometry.h
     @author Ralf Kaestner ETHZ Autonomous Systems Lab
   */
 
-#include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Odometry.h>
 
 #include "morsel-ros/node/ros_publisher.h"
 
-class ROSPose :
+class ROSOdometry :
   public ROSPublisher {
 PUBLISHED:
   /** Constructors
     */
-  ROSPose(std::string name, ROSNode& node, std::string topic, unsigned int
-    queueSize = 1000);
+  ROSOdometry(std::string name, ROSNode& node, std::string topic = "/odometry",
+    unsigned int queueSize = 1000);
 
   /** Destructor
     */
-  virtual ~ROSPose();
+  virtual ~ROSOdometry();
+
+  void publish(double time, std::string frame, const LVecBase3f& position,
+    const LQuaternionf& orientation, const LVecBase3f& translationalVelocity,
+    const LVecBase3f& rotationalVelocity);
+protected:
+  unsigned int sequence;
 };
 
 #endif

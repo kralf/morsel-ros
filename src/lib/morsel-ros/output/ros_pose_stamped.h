@@ -16,34 +16,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_VELOCITY_COMMAND_H
-#define ROS_VELOCITY_COMMAND_H
+#ifndef ROS_POSE_STAMPED_H
+#define ROS_POSE_STAMPED_H
 
-/** @file ros_velocity_command.h
+/** @file ros_pose_stamped.h
     @author Ralf Kaestner ETHZ Autonomous Systems Lab
   */
 
-#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/PoseStamped.h>
 
-#include "morsel-ros/node/ros_subscriber.h"
+#include "morsel-ros/node/ros_publisher.h"
 
-class ROSVelocityCommand :
-  public ROSSubscriber {
+class ROSPoseStamped :
+  public ROSPublisher {
 PUBLISHED:
   /** Constructors
     */
-  ROSVelocityCommand(std::string name, ROSNode& node, PyObject* actuator,
-    std::string topic = "/cmd_vel", unsigned int queueSize = 1000);
+  ROSPoseStamped(std::string name, ROSNode& node, std::string topic = "/pose",
+    unsigned int queueSize = 1000);
 
   /** Destructor
     */
-  virtual ~ROSVelocityCommand();
-protected:
-  PyObject* actuator;
+  virtual ~ROSPoseStamped();
 
-#ifndef CPPPARSER
-  void callback(const geometry_msgs::Twist::ConstPtr& message);
-#endif
+  void publish(double time, std::string frame, const LVecBase3f& position,
+    const LQuaternionf& orientation);
+protected:
+  unsigned int sequence;
 };
 
 #endif

@@ -1,24 +1,20 @@
-from morsel.nodes import Output
-from morsel_ros.rosc import ROSCamera as CROSCamera
+from morsel_ros.output.ros_camera_info import ROSCameraInfo
+from morsel_ros.output.ros_camera_image import ROSCameraImage
 
 #-------------------------------------------------------------------------------
 
-class ROSCamera(Output):
-  def __init__(self, node, name = "ROSCamera", topic = "/image_color",
-      queueSize = 1000, frame = "camera", sensor = None, **kargs):
-    Output.__init__(self, name, **kargs)
-
-    self.node = node
-    self.topic = topic
-    self.queueSize = queueSize
-    self.frame = frame
-    self.sensor = sensor
-
-    self.publisher = CROSCamera(name, self.node.node, self.sensor.sensor,
-      self.frame, self.topic, self.queueSize)
-    self.publisher.reparentTo(self)
+class ROSCamera(ROSCameraInfo, ROSCameraImage):
+  def __init__(self, node, name = "ROSCamera", infoTopic = "camera_info",
+      imageTopic = "image_color", sensor = None, orientation = [-90, -90, 0],
+      **kargs):
+    ROSCameraInfo.__init__(self, node, name = name, topic = infoTopic,
+      sensor = sensor, orientation = orientation, **kargs)
+    ROSCameraImage.__init__(self, node, name = name, topic = imageTopic,
+      sensor = sensor, orientation = orientation, **kargs)
 
 #-------------------------------------------------------------------------------
 
   def outputData(self, time):
-    self.publisher.publish(time)
+    ROSCameraInfo.outputData(self, time)
+    ROSCameraImage.outputData(self, time)
+    

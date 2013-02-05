@@ -24,16 +24,13 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ROSJoystick::ROSJoystick(std::string name, ROSNode& node, PyObject* joystick,
+ROSJoystick::ROSJoystick(std::string name, ROSNode& node, PyObject* receiver,
     std::string topic, unsigned int queueSize) :
   ROSSubscriber(name, node, node.getHandle().subscribe(topic, queueSize,
-    &ROSJoystick::callback, this)),
-  joystick(joystick) {
-  Py_XINCREF(this->joystick);
+    &ROSJoystick::callback, this), receiver) {
 }
 
 ROSJoystick::~ROSJoystick() {
-  Py_XDECREF(this->joystick);
 }
 
 /******************************************************************************/
@@ -41,6 +38,12 @@ ROSJoystick::~ROSJoystick() {
 /******************************************************************************/
 
 void ROSJoystick::callback(const sensor_msgs::Joy::ConstPtr& message) {
+  PyObject* axes = PyList_New(message->axes.size());
+  Py_XINCREF(axes);
+
   for (int i = 0; i < message->axes.size(); ++i)
-    PyObject_CallMethod(joystick, "setAxis", "(id)", i, -message->axes[i]);
+    PyList_SetItem(axes, i, PyFloat_FromDouble(message->axes[i]));
+  received("(dO)", message->header.stamp.toSec(), axes);
+
+  Py_XDECREF(axes);
 }

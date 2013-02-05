@@ -27,8 +27,6 @@
 
 namespace ros {
   class NodeHandle;
-  class Publisher;
-  class Subscriber;
 };
 
 class ROSNode :

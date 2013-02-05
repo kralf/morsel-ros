@@ -18,33 +18,44 @@
 
 #include <ros/ros.h>
 
-#include "ros_velocity_command.h"
+#include "ros_transform_stamped.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ROSVelocityCommand::ROSVelocityCommand(std::string name, ROSNode& node,
-    PyObject* actuator, std::string topic, unsigned int queueSize) :
-  ROSSubscriber(name, node, node.getHandle().subscribe(topic, queueSize,
-    &ROSVelocityCommand::callback, this)),
-  actuator(actuator) {
-  Py_XINCREF(this->actuator);
+ROSTransformStamped::ROSTransformStamped(std::string name, ROSNode& node,
+    std::string topic, unsigned int queueSize) :
+  ROSPublisher(name, node,
+    node.getHandle().advertise<geometry_msgs::TransformStamped>(topic,
+      queueSize)),
+  sequence(0) {
 }
 
-ROSVelocityCommand::~ROSVelocityCommand() {
-  Py_XDECREF(this->actuator);
+ROSTransformStamped::~ROSTransformStamped() {
 }
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-void ROSVelocityCommand::callback(const geometry_msgs::Twist::ConstPtr&
-    message) {
-  PyObject_CallMethod(actuator, "setTranslationalVelocity", "([ddd])",
-    message->linear.x, message->linear.y, message->linear.z);
-  PyObject_CallMethod(actuator, "setRotationalVelocity", "([ddd])",
-    message->angular.z*180.0/M_PI, message->angular.y*180.0/M_PI,
-    message->angular.x*180.0/M_PI);
+void ROSTransformStamped::publish(double time, std::string frame, std::string
+    childFrame, const LVecBase3f& translation, const LQuaternionf& rotation) {
+  geometry_msgs::TransformStamped message;
+
+  message.header.seq = sequence;
+  message.header.stamp = ros::Time(time);
+  message.header.frame_id = frame;
+  message.child_frame_id = childFrame;
+  message.transform.translation.x = translation[0];
+  message.transform.translation.y = translation[1];
+  message.transform.translation.z = translation[2];
+  message.transform.rotation.x = rotation[1];
+  message.transform.rotation.y = rotation[2];
+  message.transform.rotation.z = rotation[3];
+  message.transform.rotation.w = rotation[0];
+
+  ROSPublisher::publish(message);
+
+  ++sequence;
 }

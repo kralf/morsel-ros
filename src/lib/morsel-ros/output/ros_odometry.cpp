@@ -16,59 +16,51 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <cstdarg>
-
 #include <ros/ros.h>
 
-#include "ros_subscriber.h"
+#include "ros_odometry.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ROSSubscriber::ROSSubscriber(std::string name, ROSNode& node, const
-    Subscriber& subscriber, PyObject* receiver) :
-  NodePath(name),
-  node(node),
-  subscriber(new Subscriber(subscriber)),
-  receiver(receiver) {
-  Py_XINCREF(this->receiver);
+ROSOdometry::ROSOdometry(std::string name, ROSNode& node, std::string topic,
+    unsigned int queueSize) :
+  ROSPublisher(name, node,
+    node.getHandle().advertise<nav_msgs::Odometry>(topic, queueSize)),
+  sequence(0) {
 }
 
-ROSSubscriber::ROSSubscriber(const ROSSubscriber& src) :
-  NodePath(src),
-  node(src.node),
-  subscriber(new Subscriber(*src.subscriber)),
-  receiver(src.receiver) {
-  Py_XINCREF(receiver);
-}
-
-ROSSubscriber::~ROSSubscriber() {
-  Py_DECREF(receiver);
-  delete subscriber;
+ROSOdometry::~ROSOdometry() {
 }
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-void ROSSubscriber::received(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
+void ROSOdometry::publish(double time, std::string frame, const LVecBase3f&
+    position, const LQuaternionf& orientation, const LVecBase3f&
+    translationalVelocity, const LVecBase3f& rotationalVelocity) {
+  nav_msgs::Odometry message;
 
-  received(Py_VaBuildValue(format, args));
+  message.header.seq = sequence;
+  message.header.stamp = ros::Time(time);
+  message.header.frame_id = frame;
+  message.pose.pose.position.x = position[0];
+  message.pose.pose.position.y = position[1];
+  message.pose.pose.position.z = position[2];
+  message.pose.pose.orientation.x = orientation[1];
+  message.pose.pose.orientation.y = orientation[2];
+  message.pose.pose.orientation.z = orientation[3];
+  message.pose.pose.orientation.w = orientation[0];
+  message.twist.twist.linear.x = translationalVelocity[0];
+  message.twist.twist.linear.y = translationalVelocity[1];
+  message.twist.twist.linear.z = translationalVelocity[2];
+  message.twist.twist.angular.x = rotationalVelocity[2]*M_PI/180.0;
+  message.twist.twist.angular.y = rotationalVelocity[1]*M_PI/180.0;
+  message.twist.twist.angular.z = rotationalVelocity[0]*M_PI/180.0;
 
-  va_end(args);
-}
+  ROSPublisher::publish(message);
 
-void ROSSubscriber::received(PyObject* arguments) {
-  Py_XINCREF(arguments);
-
-  PyObject* method = PyObject_GetAttrString(receiver, "inputData");
-  Py_XINCREF(method);
-
-  PyObject_CallObject(method, arguments);
-
-  Py_XDECREF(method);
-  Py_XDECREF(arguments);
+  ++sequence;
 }

@@ -16,59 +16,62 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <cstdarg>
-
 #include <ros/ros.h>
 
-#include "ros_subscriber.h"
+#include <py_panda.h>
+
+#include "ros_transforms_stamped.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ROSSubscriber::ROSSubscriber(std::string name, ROSNode& node, const
-    Subscriber& subscriber, PyObject* receiver) :
-  NodePath(name),
-  node(node),
-  subscriber(new Subscriber(subscriber)),
-  receiver(receiver) {
-  Py_XINCREF(this->receiver);
+ROSTransformsStamped::ROSTransformsStamped(std::string name, ROSNode& node) :
+  ROSTransformBroadcaster(name, node),
+  sequence(0) {
 }
 
-ROSSubscriber::ROSSubscriber(const ROSSubscriber& src) :
-  NodePath(src),
-  node(src.node),
-  subscriber(new Subscriber(*src.subscriber)),
-  receiver(src.receiver) {
-  Py_XINCREF(receiver);
-}
-
-ROSSubscriber::~ROSSubscriber() {
-  Py_DECREF(receiver);
-  delete subscriber;
+ROSTransformsStamped::~ROSTransformsStamped() {
 }
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-void ROSSubscriber::received(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
+void ROSTransformsStamped::publish(double time, PyObject* transforms) {
+  Py_INCREF(transforms);
+  std::vector<geometry_msgs::TransformStamped> messages;
+  geometry_msgs::TransformStamped message;
 
-  received(Py_VaBuildValue(format, args));
+  PyObject* key;
+  PyObject* value;
+  Py_ssize_t i = 0;
 
-  va_end(args);
-}
+  while (PyDict_Next(transforms, &i, &key, &value)) {
+    std::string childFrame = PyString_AsString(key);
+    std::string frame = PyString_AsString(PyTuple_GetItem(value, 0));
+    const LVecBase3f& translation = *(LVecBase3f*)((Dtool_PyInstDef*)
+      PyTuple_GetItem(value, 1))->_ptr_to_object;
+    const LQuaternionf& rotation = *(LQuaternionf*)((Dtool_PyInstDef*)
+      PyTuple_GetItem(value, 2))->_ptr_to_object;
 
-void ROSSubscriber::received(PyObject* arguments) {
-  Py_XINCREF(arguments);
+    message.header.seq = sequence;
+    message.header.stamp = ros::Time(time);
+    message.header.frame_id = PyString_AsString(PyTuple_GetItem(value, 0));
+    message.child_frame_id = PyString_AsString(key);
+    message.transform.translation.x = translation[0];
+    message.transform.translation.y = translation[1];
+    message.transform.translation.z = translation[2];
+    message.transform.rotation.x = rotation[1];
+    message.transform.rotation.y = rotation[2];
+    message.transform.rotation.z = rotation[3];
+    message.transform.rotation.w = rotation[0];
 
-  PyObject* method = PyObject_GetAttrString(receiver, "inputData");
-  Py_XINCREF(method);
+    messages.push_back(message);
+  }
 
-  PyObject_CallObject(method, arguments);
+  ROSTransformBroadcaster::publish(messages);
 
-  Py_XDECREF(method);
-  Py_XDECREF(arguments);
+  Py_DECREF(transforms);
+  ++sequence;
 }

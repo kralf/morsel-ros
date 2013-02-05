@@ -19,44 +19,37 @@
 #include <ros/ros.h>
 #include <sensor_msgs/image_encodings.h>
 
-#include <morsel/sensors/image_sensor.h>
-
-#include "ros_camera.h"
+#include "ros_image.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ROSCamera::ROSCamera(std::string name, ROSNode& node, NodePath& sensor,
-    std::string frame, std::string topic, unsigned int queueSize) :
+ROSImage::ROSImage(std::string name, ROSNode& node, std::string topic,
+    unsigned int queueSize) :
   ROSPublisher(name, node,
     node.getHandle().advertise<sensor_msgs::Image>(topic, queueSize)),
-  sensor(static_cast<ImageSensor&>(sensor)),
-  sequence(0),
-  frame(frame) {
+  sequence(0) {
 }
 
-ROSCamera::~ROSCamera() {
+ROSImage::~ROSImage() {
 }
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-void ROSCamera::publish(double time) {
+void ROSImage::publish(double time, std::string frame, const PNMImage& image) {
   sensor_msgs::Image message;
-  const PNMImage& image = sensor.getImage();
 
   message.header.seq = sequence;
   message.header.stamp = ros::Time(time);
   message.header.frame_id = frame;
-
   message.height = image.get_read_y_size();
   message.width = image.get_read_x_size();
   message.encoding = sensor_msgs::image_encodings::RGB8;
   message.is_bigendian = false;
   message.step = message.width*3;
-
   message.data.resize(message.height*message.step);
   for (int i = 0; i < message.width; ++i)
       for (int j = 0; j < message.height; ++j) {
@@ -65,6 +58,7 @@ void ROSCamera::publish(double time) {
     message.data[j*message.step+3*i+2] = image.get_blue_val(i, j);
   }
 
-  publisher->publish(message);
+  ROSPublisher::publish(message);
+
   ++sequence;
 }

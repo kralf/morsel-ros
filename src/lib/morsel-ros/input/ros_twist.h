@@ -16,38 +16,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_CAMERA_H
-#define ROS_CAMERA_H
+#ifndef ROS_TWIST_H
+#define ROS_TWIST_H
 
-/** @file ros_camera.h
+/** @file ros_twist.h
     @author Ralf Kaestner ETHZ Autonomous Systems Lab
   */
 
-#include <sensor_msgs/Image.h>
+#include <geometry_msgs/Twist.h>
 
-#include "morsel-ros/node/ros_publisher.h"
+#include "morsel-ros/node/ros_subscriber.h"
 
-class ImageSensor;
-
-class ROSCamera :
-  public ROSPublisher {
+class ROSTwist :
+  public ROSSubscriber {
 PUBLISHED:
   /** Constructors
     */
-  ROSCamera(std::string name, ROSNode& node, NodePath& sensor, std::string
-    frame = "camera", std::string topic = "/image_color", unsigned int
-    queueSize = 1000);
+  ROSTwist(std::string name, ROSNode& node, PyObject* receiver, std::string
+    topic = "/cmd_vel", unsigned int queueSize = 1000);
 
   /** Destructor
     */
-  virtual ~ROSCamera();
-
-  void publish(double time);
+  virtual ~ROSTwist();
 protected:
-  ImageSensor& sensor;
-
-  unsigned int sequence;
-  std::string frame;
+#ifndef CPPPARSER
+  void callback(const geometry_msgs::Twist::ConstPtr& message);
+#endif
 };
 
 #endif

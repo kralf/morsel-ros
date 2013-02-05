@@ -6,5 +6,5 @@ panda3d_interrogate_module(
 
 remake_add_library(
   morsel_rosc PREFIX panda3d-
-  LINK node input output ${PANDA3D_MORSELC_LIBRARY}
+  LINK node transform input output ${PANDA3D_MORSELC_LIBRARY}
 )

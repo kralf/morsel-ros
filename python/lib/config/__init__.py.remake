@@ -1,0 +1,11 @@
+import os
+from os.path import *
+
+#-------------------------------------------------------------------------------
+
+class Configuration(object):
+  def __init__(self):
+    object.__init__(self)
+
+    self.libraries = "${ROS_ROSCPP_LIBRARIES};${ROS_TF_LIBRARIES}".split(";")
+    self.libraryDirs = "${ROS_ROSCPP_LIBRARY_DIRS};${ROS_TF_LIBRARY_DIRS}".split(";")

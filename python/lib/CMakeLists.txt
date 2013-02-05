@@ -1,3 +1,3 @@
-remake_add_directories(morsel_ros)
-remake_python_distribute(PACKAGES morsel_ros)
+remake_add_directories(config morsel_ros)
+remake_python_distribute(PACKAGES morsel_ros morsel_ros.config)
 remake_add_directories(rosc)

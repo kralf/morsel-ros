@@ -16,32 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_JOYSTICK_H
-#define ROS_JOYSTICK_H
+#include <ros/ros.h>
 
-/** @file ros_joystick.h
-    @author Ralf Kaestner ETHZ Autonomous Systems Lab
-  */
+#include "ros_twist.h"
 
-#include <sensor_msgs/Joy.h>
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
-#include "morsel-ros/node/ros_subscriber.h"
+ROSTwist::ROSTwist(std::string name, ROSNode& node, PyObject* receiver,
+    std::string topic, unsigned int queueSize) :
+  ROSSubscriber(name, node, node.getHandle().subscribe(topic, queueSize,
+    &ROSTwist::callback, this), receiver) {
+}
 
-class ROSJoystick :
-  public ROSSubscriber {
-PUBLISHED:
-  /** Constructors
-    */
-  ROSJoystick(std::string name, ROSNode& node, PyObject* receiver,
-    std::string topic = "/joy", unsigned int queueSize = 1000);
+ROSTwist::~ROSTwist() {
+}
 
-  /** Destructor
-    */
-  virtual ~ROSJoystick();
-protected:
-#ifndef CPPPARSER
-  void callback(const sensor_msgs::Joy::ConstPtr& message);
-#endif
-};
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
 
-#endif
+void ROSTwist::callback(const geometry_msgs::Twist::ConstPtr& message) {
+  received("(d[ddd][ddd])", ros::Time::now().toSec(), message->linear.x,
+    message->linear.y, message->linear.z, message->angular.z*180.0/M_PI,
+    message->angular.y*180.0/M_PI, message->angular.x*180.0/M_PI);
+}

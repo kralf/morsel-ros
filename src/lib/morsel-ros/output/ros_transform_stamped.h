@@ -16,32 +16,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#ifndef ROS_JOYSTICK_H
-#define ROS_JOYSTICK_H
+#ifndef ROS_TRANSFORM_STAMPED_H
+#define ROS_TRANSFORM_STAMPED_H
 
-/** @file ros_joystick.h
+/** @file ros_transform_stamped.h
     @author Ralf Kaestner ETHZ Autonomous Systems Lab
   */
 
-#include <sensor_msgs/Joy.h>
+#include <geometry_msgs/TransformStamped.h>
 
-#include "morsel-ros/node/ros_subscriber.h"
+#include "morsel-ros/node/ros_publisher.h"
 
-class ROSJoystick :
-  public ROSSubscriber {
+class ROSTransformStamped :
+  public ROSPublisher {
 PUBLISHED:
   /** Constructors
     */
-  ROSJoystick(std::string name, ROSNode& node, PyObject* receiver,
-    std::string topic = "/joy", unsigned int queueSize = 1000);
+  ROSTransformStamped(std::string name, ROSNode& node, std::string
+    topic = "/transform", unsigned int queueSize = 1000);
 
   /** Destructor
     */
-  virtual ~ROSJoystick();
+  virtual ~ROSTransformStamped();
+
+  void publish(double time, std::string frame, std::string childFrame,
+    const LVecBase3f& translation, const LQuaternionf& rotation);
 protected:
-#ifndef CPPPARSER
-  void callback(const sensor_msgs::Joy::ConstPtr& message);
-#endif
+  unsigned int sequence;
 };
 
 #endif
