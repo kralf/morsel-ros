@@ -1,0 +1,24 @@
+morsel-ros (1.0-4) unstable; urgency=low
+
+  * Added changelog
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Thu, 08 Aug 2013 07:16:00 +0100
+
+morsel-ros (1.0-3) unstable; urgency=low
+
+  * Removed ROSPoseStamped output from playground.conf
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Tue, 05 Feb 2013 14:59:36 +0100
+
+morsel-ros (1.0-2) unstable; urgency=low
+
+  * Added basic output messages for visualization in rviz
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Tue, 05 Feb 2013 14:56:14 +0100
+
+morsel-ros (1.0-1) unstable; urgency=low
+
+  * Initial commit
+  * First messages wrapped in input and output classes
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Thu, 24 Jan 2013 17:13:59 +0100
