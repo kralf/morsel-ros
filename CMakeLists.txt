@@ -34,7 +34,7 @@ if(ROS_DISTRIBUTION STRLESS "groovy")
     DISTRIBUTION lucid
     SECTION misc
     ARCH "i386 amd64"
-    UPLOAD ppa:kralf/naro
+    UPLOAD ppa:kralf/asl
     DEPENDS remake pkg-config doxygen
     PASS CMAKE_BUILD_TYPE ${GIT_REVISION_VAR}
     FORCE_CONSISTENCY
@@ -45,7 +45,7 @@ remake_ros_distribute_deb(
   DISTRIBUTION precise
   SECTION misc
   ARCH "i386 amd64"
-  UPLOAD ppa:kralf/naro
+  UPLOAD ppa:kralf/asl
   DEPENDS remake pkg-config doxygen
   PASS CMAKE_BUILD_TYPE ${GIT_REVISION_VAR}
   FORCE_CONSISTENCY
