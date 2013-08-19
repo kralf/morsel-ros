@@ -1,0 +1,11 @@
+pub_rate: 1.0
+base_path: ''
+analyzers:
+  engine:
+    type: AnalyzerGroup
+    path: Simulator
+    analyzers:
+      framerate:
+        type: GenericAnalyzer
+        path: Framerate
+        find_and_remove_prefix: 'framerate:'

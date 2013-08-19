@@ -1,0 +1,58 @@
+import os
+from os.path import *
+
+#-------------------------------------------------------------------------------
+
+class Configuration(object):
+  def __init__(self):
+    object.__init__(self)
+
+    self.configurationPath = "${CONFIGURATION_DESTINATION}"
+    self.filePath = "${FILE_DESTINATION}"
+
+    self.arguments = {
+      "name": "__name:=(.+)",
+      "masterUri": "__master:=(.+)",
+      "log": "__log:=(.+)",
+      "namespace": "__ns:=(.+)",
+    }
+
+#-------------------------------------------------------------------------------
+
+  def getName(self):
+    return ros.name
+
+  def setName(self, name):
+    ros.name = name
+    
+  name = property(getName, setName)
+
+#-------------------------------------------------------------------------------
+
+  def getMasterUri(self):
+    return ros.masterUri
+
+  def setMasterUri(self, masterUri):
+    ros.masterUri = masterUri
+    
+  masterUri = property(getMasterUri, setMasterUri)
+
+#-------------------------------------------------------------------------------
+
+  def getLog(self):
+    return ros.log
+
+  def setLog(self, log):
+    ros.log = log
+    
+  log = property(getLog, setLog)
+
+#-------------------------------------------------------------------------------
+
+  def getNamespace(self):
+    return ros.namespace
+
+  def setNamespace(self, namespace):
+    ros.namespace = namespace
+    
+  namespace = property(getNamespace, setNamespace)

@@ -1,0 +1,6 @@
+<launch>
+  <arg name="conf" default="minimal.conf"/>
+  <node name="morsel" pkg="morsel_simulator" type="simulator.py" args="$(arg conf)" respawn="false">
+    <rosparam command="load" file="$(find morsel_simulator)/etc/simulator.yaml"/>
+  </node>
+</launch>

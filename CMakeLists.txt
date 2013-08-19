@@ -4,37 +4,49 @@ include(ReMake)
 include(Panda3D)
 
 remake_project(
-  morsel-ros
+  morsel-ros-${ROS_DISTRIBUTION}
   VERSION 1.0
   RELEASE beta
-  SUMMARY "Morsel ROS bindings"
+  SUMMARY "ROS bindings for the MObile Robot Simulator."
   AUTHOR "Ralf Kaestner"
-  CONTACT "ralf.kaestner@mavt.ethz.ch"
-  HOME "http://aslforge.ethz.ch/projects/morsel-ros"
+  CONTACT "ralf.kaestner@gmail.com"
+  HOME "http://github.com/kralf/morsel-ros"
   LICENSE "GNU Lesser General Public License (LGPL)"
   INSTALL /usr
 )
 
-remake_python()
 remake_doc(
   html
-  latex
 )
 
+remake_ros_pack_deb()
+
 remake_pack_deb(
-  morsel
-)
-remake_pack_deb(
-  COMPONENT dev
-  DESCRIPTION "Development headers"
-  morsel-ros morsel-dev
-)
-remake_pack_deb(
-  COMPONENT python
-  morsel-ros morsel-python
-)
-remake_pack_deb(
+  ARCH all
   COMPONENT doc
-  DESCRIPTION "Documentation"
-  morsel-ros
+  DESCRIPTION "documentation"
+)
+
+remake_var_name(GIT_REVISION_VAR ${REMAKE_PROJECT_FILENAME} GIT_REVISION)
+
+if(ROS_DISTRIBUTION STRLESS "groovy")
+  remake_ros_distribute_deb(
+    DISTRIBUTION lucid
+    SECTION misc
+    ARCH "i386 amd64"
+    UPLOAD ppa:kralf/naro
+    DEPENDS remake pkg-config
+    PASS CMAKE_BUILD_TYPE ${GIT_REVISION_VAR}
+    FORCE_CONSISTENCY
+  )
+endif(ROS_DISTRIBUTION STRLESS "groovy")
+
+remake_ros_distribute_deb(
+  DISTRIBUTION precise
+  SECTION misc
+  ARCH "i386 amd64"
+  UPLOAD ppa:kralf/naro
+  DEPENDS remake pkg-config
+  PASS CMAKE_BUILD_TYPE ${GIT_REVISION_VAR}
+  FORCE_CONSISTENCY
 )
