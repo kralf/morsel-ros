@@ -1,3 +1,9 @@
+morsel-ros (1.0-8) unstable; urgency=low
+
+  * Added dependencies on ROS messages
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Tue, 20 Aug 2013 06:40:00 +0100
+
 morsel-ros (1.0-7) unstable; urgency=low
 
   * Fixed PPA Url

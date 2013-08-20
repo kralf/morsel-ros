@@ -1,6 +1,7 @@
 remake_ros_package(
   morsel_simulator
-  DEPENDS roscpp rospy tf diagnostic_updater
+  DEPENDS roscpp rospy tf std_msgs geometry-msgs sensor-msgs nav_msgs
+    diagnostic_updater
   EXTRA_BUILD_DEPENDS morsel-dev morsel-python
   EXTRA_RUN_DEPENDS morsel morsel-python
   DESCRIPTION "simulator"
