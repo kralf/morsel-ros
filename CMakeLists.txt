@@ -37,6 +37,7 @@ if(ROS_DISTRIBUTION STRLESS "groovy")
     UPLOAD ppa:kralf/asl
     DEPENDS remake pkg-config doxygen
     PASS CMAKE_BUILD_TYPE ${GIT_REVISION_VAR}
+    OVERRIDE dh_shlibdeps
     FORCE_CONSISTENCY
   )
 endif(ROS_DISTRIBUTION STRLESS "groovy")

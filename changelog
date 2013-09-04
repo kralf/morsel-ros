@@ -1,3 +1,9 @@
+morsel-ros (1.0-10) unstable; urgency=low
+
+  * Overriding dh_shlibdeps for lucid builds to fix build error
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Wed, 04 Sep 2013 09:51:00 +0100
+
 morsel-ros (1.0-9) unstable; urgency=low
 
   * Fixed ROS package naming
